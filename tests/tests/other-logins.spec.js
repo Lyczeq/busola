@@ -13,7 +13,7 @@ context('Other login options', () => {
       cy.visit(`${config.clusterAddress}/clusters`);
 
       cy.getIframeBody()
-        .contains('Add a Cluster')
+        .contains('Connect a cluster')
         .click();
 
       cy.getIframeBody()
@@ -50,10 +50,11 @@ context('Other login options', () => {
         .click();
 
       cy.getIframeBody()
-        .contains('Add Cluster')
+        .find('[role="dialog"]')
+        .contains('button', 'Connect a cluster')
         .click();
 
-      cy.url().should('match', /namespaces$/);
+      cy.url().should('match', /overview$/);
       cy.getIframeBody()
         .find('thead')
         .should('be.visible');
@@ -62,7 +63,7 @@ context('Other login options', () => {
 
   it('Reset endpoint', () => {
     cy.loginAndSelectCluster();
-    cy.url().should('match', /namespaces$/);
+    cy.url().should('match', /overview$/);
 
     cy.visit(`${config.clusterAddress}/reset`);
     cy.url().should('match', /clusters$/);

@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import * as jp from 'jsonpath';
+import * as _ from 'lodash';
 
-import { ResourceForm } from 'shared/ResourceForm/ResourceForm';
-import * as Inputs from 'shared/ResourceForm/components/Inputs';
+import { ResourceForm } from 'shared/ResourceForm';
+import * as Inputs from 'shared/ResourceForm/inputs';
+import { K8sNameField, KeyValueField } from 'shared/ResourceForm/fields';
 
 import './ReplicaSets.create.scss';
 import { createContainerTemplate, createReplicaSetTemplate } from './templates';
@@ -12,7 +14,9 @@ import {
   AdvancedContainersView,
 } from 'shared/components/Deployment/ContainersViews';
 
-export function ReplicaSetsCreate({
+function ReplicaSetsCreate({
+  resourceUrl,
+  resource: initialReplicaSet,
   formElementRef,
   namespace,
   onChange,
@@ -21,7 +25,7 @@ export function ReplicaSetsCreate({
   const { t } = useTranslation();
 
   const [replicaset, setReplicaSet] = useState(
-    createReplicaSetTemplate(namespace),
+    _.cloneDeep(initialReplicaSet) || createReplicaSetTemplate(namespace),
   );
 
   useEffect(() => {
@@ -49,20 +53,22 @@ export function ReplicaSetsCreate({
       setResource={setReplicaSet}
       onChange={onChange}
       formElementRef={formElementRef}
-      createUrl={`/apis/apps/v1/namespaces/${namespace}/replicasets/`}
+      createUrl={resourceUrl}
+      initialResource={initialReplicaSet}
     >
-      <ResourceForm.K8sNameField
+      <K8sNameField
         propertyPath="$.metadata.name"
         kind={t('replica-sets.name_singular')}
         setValue={handleNameChange}
+        readOnly={!!initialReplicaSet}
       />
-      <ResourceForm.KeyValueField
+      <KeyValueField
         advanced
         propertyPath="$.metadata.labels"
         title={t('common.headers.labels')}
         className="fd-margin-top--sm"
       />
-      <ResourceForm.KeyValueField
+      <KeyValueField
         advanced
         propertyPath="$.metadata.annotations"
         title={t('common.headers.annotations')}
@@ -109,3 +115,5 @@ export function ReplicaSetsCreate({
     </ResourceForm>
   );
 }
+ReplicaSetsCreate.allowEdit = true;
+export { ReplicaSetsCreate };

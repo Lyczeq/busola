@@ -1,11 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { MessageStrip, Switch } from 'fundamental-react';
 import * as jp from 'jsonpath';
 import { createLoginCommand, tryParseOIDCparams } from './oidc-params';
 
-import { ResourceForm } from 'shared/ResourceForm/ResourceForm';
-import * as Inputs from 'shared/ResourceForm/components/Inputs';
+import { ResourceForm } from 'shared/ResourceForm';
+import * as Inputs from 'shared/ResourceForm/inputs';
 import { getUser, getUserIndex } from '../shared';
 
 export const AUTH_FORM_TOKEN = 'Token';
@@ -61,7 +61,6 @@ const OIDCform = ({ resource, setResource, ...props }) => {
 const TokenForm = ({ resource, ...props }) => {
   const { t } = useTranslation();
   const userIndex = getUserIndex(resource);
-
   return (
     <ResourceForm.Wrapper resource={resource} {...props}>
       <ResourceForm.FormField
@@ -75,10 +74,10 @@ const TokenForm = ({ resource, ...props }) => {
 };
 
 export function AuthForm({
-  onValid,
   formElementRef,
   resource,
   setResource,
+  revalidate,
   ...props
 }) {
   const { t } = useTranslation();
@@ -86,6 +85,21 @@ export function AuthForm({
   const [useOidc, setUseOidc] = useState(
     getUser(resource)?.exec?.args?.[0] === 'oidc-login',
   );
+
+  useEffect(() => {
+    revalidate();
+  }, [useOidc, revalidate]);
+
+  const userIndex = getUserIndex(resource);
+
+  const switchAuthVariant = () => {
+    if (useOidc) {
+      jp.value(resource, `$.users[${userIndex}].user.exec`, undefined);
+    } else {
+      jp.value(resource, `$.users[${userIndex}].user.token`, undefined);
+    }
+    setUseOidc(!useOidc);
+  };
 
   return (
     <ResourceForm.Wrapper
@@ -110,8 +124,10 @@ export function AuthForm({
         </MessageStrip>
       )}
       <ResourceForm.FormField
-        label="I'm using an OIDC provider instead"
-        input={() => <Switch compact onChange={() => setUseOidc(!useOidc)} />}
+        label={t('clusters.wizard.auth.using-oidc')}
+        input={() => (
+          <Switch checked={useOidc} compact onChange={switchAuthVariant} />
+        )}
       />
       {useOidc && <OIDCform />}
     </ResourceForm.Wrapper>

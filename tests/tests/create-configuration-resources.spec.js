@@ -88,16 +88,6 @@ context('Test configuration resources', () => {
       .should('be.visible');
   });
 
-  it('Create a Roles list view', () => {
-    cy.getLeftNav()
-      .find('[data-testid=roles_roles]')
-      .click();
-
-    cy.getIframeBody()
-      .contains('h3', 'Roles')
-      .should('be.visible');
-  });
-
   it('Create a Role Binding', () => {
     cy.getLeftNav()
       .find('[data-testid=role-bindings_rolebindings]')
@@ -151,51 +141,5 @@ context('Test configuration resources', () => {
       .find('tbody tr')
       .its('length')
       .should('be.gte', 1);
-  });
-
-  it('Create a ClusterRoleBinding', () => {
-    cy.getLeftNav()
-      .find('[data-testid=cluster-role-bindings_clusterrolebindings]')
-      .click();
-
-    cy.getIframeBody()
-      .contains('Create ClusterRoleBinding')
-      .click();
-
-    cy.getIframeBody()
-      .find('[placeholder="User name"]')
-      .clear()
-      .type(USER_NAME);
-
-    cy.getIframeBody()
-      .find('[placeholder="Choose role..."]')
-      .type(ROLE_NAME);
-
-    cy.getIframeBody()
-      .find('[role="dialog"]')
-      .contains('button', 'Create')
-      .click();
-
-    cy.getIframeBody()
-      .find('[role="search"] [aria-label="search-input"]')
-      .type(`${USER_NAME}-view`, { force: true }); // use force to skip clicking (the table could re-render between the click and the typing)
-
-    cy.getIframeBody()
-      .contains('tbody tr td a', `${USER_NAME}-view`)
-      .click({ force: true });
-
-    cy.getIframeBody()
-      .contains(`${USER_NAME}-view`)
-      .should('be.visible');
-
-    cy.getIframeBody()
-      .contains('button', 'Delete')
-      .click();
-
-    cy.get('[data-testid=luigi-modal-confirm]').click();
-
-    cy.getLeftNav()
-      .contains('Configuration')
-      .click(); // close navigation tab after yourself
   });
 });

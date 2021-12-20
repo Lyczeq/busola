@@ -8,7 +8,12 @@ addons:
   messages:
     created: Addons Configuration {{name}} created.
   repository-urls: Repository URLs
+  singular_name: Addons Configuration
   title: Addons
+  tooltips:
+    failed: One of the repositories failed.
+    pending: Addon is being processed.
+    ready: Addon configured.
   urls: URLs
 api-rules:
   access-strategies:
@@ -75,6 +80,9 @@ api-rules:
     ns-no-services: No Services in this Namespace.
     placeholder: Choose the service to expose.
   title: API Rules
+  tooltips:
+    ok: Resource created.
+    skipped: Skipped creating the resource.
 applications:
   aria:
     namespace: Choose Namespace
@@ -119,6 +127,9 @@ applications:
     description: Specify a description for your Application.
     name: Specify a name for your Application.
     namespace: Choose Namespace.
+  statuses:
+    deployed: Deployed
+    provisioning: Provisioning
   subtitle:
     bound-to: Services and events bound to '{{namespace}}'.
     connect-app: Connect Application
@@ -128,6 +139,8 @@ applications:
     namespace-bindings: Namespace Bindings
     provided-services: Provided Services and events
   title: Applications
+  tooltips:
+    provisioning: The Application is being provisioned asynchronously.
 brokers:
   description: <0>Service Broker</0> provides a set of managed services that a third party offers and maintains.
   headers:
@@ -149,10 +162,15 @@ btp-instances:
     plan-name: The plan name to use for the Service Instance.
   plan-name: Plan Name
   resource-type: Service Instance
+  statuses:
+    createfailed: Create Failed
+    notprovisioned: Not Provisioned
+    provisioned: Provisioned
   title: BTP Service Instances
   tooltips:
     offering-name: You find the name of the SAP BTP service offering in the BTP Cockpit in the Service Marketplace.
     plan-name: You find the plan to be used for the service instance in the BTP Cockpit in the Service Marketplace.
+    provisioned: Provisioned successfully.
 btp-service-bindings:
   binding-id: Binding ID
   data: Binding Data
@@ -180,6 +198,7 @@ btp-service-bindings:
   title: BTP Service Bindings
   tooltips:
     parameters-from: Secret references to populate the parameters.
+    provisioned: Provisioned successfully.
     secret: The name of the secret where the credentials are stored, defaults to the Service Binding name if not specified.
     secret-not-found: This Secret doesn't exist.
 catalog:
@@ -210,7 +229,7 @@ certificates:
     name: Certificate name
     secret-name: Requested Secret name
   refs: References
-  renew: Trigger a renewal
+  renew: Renew
   secret-name: Secret name
   secret-ref: Secret to use
   state: Status
@@ -221,6 +240,7 @@ certificates:
     dns-names: DNS Names are the optional additional domain names of the certificate.
     existing-secret: Use an existing Secret for storing the certificate if enabled. Otherwise a new Secret will be created.
     issuer: Certificate issuer. If no issuer is given, the default issuer is used.
+    ready: Certificate issued successfully.
     renew: Trigger a certificate renewal if enabled.
     secret-name: Name of the Secret object to use for storing the certificate.
     secret-ref: Reference of the existing Secret object to use for storing the certificate.
@@ -228,6 +248,7 @@ certificates:
   with-csr: Use a CSR
 cluster-addons:
   description: <0>Cluster Addons Configuration</0> defines cluster-wide addons that provide all information required to convert Helm charts into Service Classes in Service Catalog.
+  singular_name: Cluster Addons Configuration
   title: Cluster Addons
 cluster-role-bindings:
   description: <0>Cluster Role Binding</0> assigns the permissions defined in a Cluster Role to a user.
@@ -240,14 +261,14 @@ cluster-roles:
 clusters:
   add:
     errors:
-      failed-to-add-cluster: Failed to add a cluster
-    title: Add a Cluster
+      failed-to-add-cluster: Failed to connect a cluster
+    title: Connect a cluster
   buttons:
-    apply-configuration: Apply Configuration
+    apply-configuration: Apply configuration
     apply-kubeconfig: Apply kubeconfig
-    next-step: Next Step
+    next-step: Next step
     previous-step: Previous Step
-    verify-and-add: Add Cluster
+    verify-and-add: Connect a cluster
   common:
     api-server-address: API server address
     download-kubeconfig: Download Kubeconfig
@@ -271,9 +292,17 @@ clusters:
     upload-paste-kubeconfig: Upload or paste your kubeconfig file.
     wrong-configuration: Cannot apply the configuration.
   overview:
+    messages:
+      no-metrics: No metrics available for this node.
     title-all-clusters: Clusters Overview
     title-current-cluster: Cluster Overview
+    title-no-clusters-available: No clusters available
     version: Version
+  statuses:
+    inmemory: In Memory
+    localstorage: Local Storage
+    sessionstorage: Session Storage
+    unknown: Unknown
   storage:
     changed-message: The chosen storage type has been overwritten by the cluster configuration from {{originalStorage}} to {{targetStorage}}.
     choose-storage:
@@ -284,23 +313,29 @@ clusters:
       sessionStorage: Cluster data is cleared when the page session ends.
       unknown: Unknown storage type
     info: |
-      Now you can choose where we store your cluster configuration. Based on your kubeconfig type, we recomment the pre-selected storage mode. Of course, you can choose whateer you prefer for convenience and security. None of the options stores information on the server.
+      You can choose where to store your cluster configuration. Based on your kubeconfig type, we recommend the pre-selected storage mode. You can choose whatever you prefer for convenience and security. None of the options stores information on the server.
     labels:
       inMemory: In memory
       localStorage: Local storage
       sessionStorage: Session storage
       unknown: Unknown
     title: Storage Type
+  tooltips:
+    inmemory: Cluster data is cleared when you leave or refresh the page.
+    localstorage: Cluster data is persisted between browser reloads.
+    sessionstorage: Cluster data is cleared when the page session ends.
+    unknown: Unknown storage type
   wizard:
     auth:
       client-id: Client ID
       issuer-url: Issuer URL
       scopes: Scopes
       token: Token
+      using-oidc: I'm using an OIDC provider instead
     context: Current context
     editor-label: 'or paste your kubeconfig here:'
     incomplete: We couldn't find enough authentication information in your kubeconfig. You can enter it manually.
-    intro: To add a cluster, all you have to do is provide the cluster configuration – called “kubeconfig” in the Kubernetes world.
+    intro: To connect a cluster, you have to provide the cluster configuration – called “kubeconfig” in the Kubernetes world.
     kubeconfig: Provide Kubeconfig
     not-an-object: kubeconfig is not an object
     storage: Privacy Options
@@ -354,6 +389,7 @@ common:
     logs: Logs
     name: Name
     owner: Controlled By
+    pods: Pods
     resources: Resources
     status: Status
   labels:
@@ -361,8 +397,11 @@ common:
     default-preset: Default
     hostname: Hostname
     issuer: Issuer
+    kubernetes: Kubernetes
+    kyma: Kyma
     name: Name
     namespace: Namespace
+    path: Path
     protocol: Protocol
     read-only: Read-only mode
     resource: Resource
@@ -392,22 +431,35 @@ common:
   placeholders:
     secret-ref-name: Select name
     secret-ref-namespace: Select Namespace
+  protected-resource: This resource is protected.
+  statuses:
+    error: Error
+    failed: Failed
+    'false': 'false'
+    invalid: Invalid
+    ok: OK
+    pending: Pending
+    ready: Ready
+    'true': 'true'
+    unknown: Unknown
   tooltips:
     copy-to-clipboard: Copy to clipboard
     download: Download
     duplicate-key: Duplicate key
-    error: 'Error: '
+    error: Error
     k8s-name-input: "Name must consist of lowercase alphanumeric characters, can contain '-' (e.g.: 'my-name1')."
     key: Key must start and end with an alphanumeric character, can contain '-', '_' or '.'.
     key-value: key=value, must start and end with an alphanumeric character, can contain '-', '_' or '.'.
     read-file: Read file content as a single value, with file name as a key.
     resource-ref-name: Unique name within a Namespace to refer to a {{resource}} resource.
     resource-ref-namespace: Namespace defines the space within which the {{resource}} name must be unique.
+    running-pods: '{{running}} out of {{expected}} Pods are running'
     save: Save
     search: Search
     secret-ref-name: Unique name within a Namespace to refer to a Secret resource.
     secret-ref-namespace: Namespace defines the space within which the secret name must be unique.
     value: Value must start and end with an alphanumeric character, can contain '-', '_' or '.'
+  'yes': 'yes'
 components:
   dropdown:
     empty-list: No resources available
@@ -479,10 +531,6 @@ configuration:
   title: Configuration
 cron-jobs:
   concurrency-policy:
-    descriptions:
-      allow: Allow concurrent executions.
-      forbid: No concurrent executions, skip the new run if the previous one hasn't finished yet.
-      replace: No concurrent executions, replace the previous run with the new one.
     title: Concurrency Policy
   create-modal:
     day-of-month: Day of Month
@@ -519,6 +567,10 @@ cron-jobs:
   not-scheduled-yet: None scheduled yet
   schedule: Schedule
   title: Cron Jobs
+  tooltips:
+    allow: Allow concurrent executions.
+    forbid: No concurrent executions, skip the new run if the previous one hasn't finished yet.
+    replace: No concurrent executions, replace the previous run with the new one.
 custom-resource-definitions:
   description: <0>Custom Resource Definition</0> is an object used to define a custom resource that allows you to extend the Kubernetes API for use cases that are not directly covered by core Kubernetes.
   headers:
@@ -544,9 +596,14 @@ custom-resource-definitions:
     schema: Schema
     version: Version
   title: Custom Resource Definitions
+  tooltips:
+    not-served: This version is not served using REST APIs.
+    served: This version is served using REST APIs.
+    storage: Use this version when persisting custom resources to storage.
 daemon-sets:
   description: <0>Daemon Set</0> ensures that replicated Pods are running across a set of available nodes.
   images: Images
+  name_singular: Daemon Set
   node-selector: Node Selector
   pods: $t(pods.title)
   title: Daemon Sets
@@ -559,6 +616,7 @@ daemon-sets:
 deployments:
   create-modal:
     advanced:
+      add-container: Add Container
       container-header: Container {{name}}
       containers: Containers
       cpu-limits: CPU Limits
@@ -587,7 +645,69 @@ deployments:
     images: Images
     pods: $t(pods.title)
   name_singular: Deployment
+  statuses:
+    error: Error
+    running: Running
   title: Deployments
+destination-rules:
+  age: Age
+  description: <0>Destination Rule</0> specifies rules that apply to traffic intended for a service after routing.
+  details:
+    alt-names: Subject Alt Names
+    base-ejection: Base Ejection Time
+    ca-certificates: CA Certificates
+    client-certificate: Client Certificate
+    client-protocol: Use Client Protocol
+    connection-timeout: Connection Timeout
+    consecutive-5xx: Consecutive 5xx Errors
+    consecutive-failures: Consecutive Local Origin Failures
+    consistent-hash: Consistent Hash
+    credential-name: Credential Name
+    distribution: Distribution
+    enabled: Enabled
+    failover: Failover
+    failover-priority: Failover Priority
+    from: From
+    h2-upgrade: H2 Upgrade Policy
+    http-cookie: HTTP cookie
+    http-header: HTTP Header Name
+    http-max: HTTP2 Max Requests
+    http-pending: HTTP1 Max Pending Requests
+    http-query-parameter: HTTP Query Parameter Name
+    http-settings: HTTP Connection Pool Settings
+    idle-timeout: Idle Timeout
+    interval: Interval
+    lb-settings: Locality LB Settings
+    load-balancer: Load Balancer
+    max-connections: Max Connections
+    max-ejection: Max Ejection Percent
+    max-per-connection: Max Requests Per Connections
+    max-retries: Max Retries
+    min-health: Min Health Percent
+    minimum-ring-size: Minimum Ring Size
+    outlier-detection: Outlier Detection
+    port-traffic-policy: Port {{port}} Traffic Policy
+    private-key: Private Key
+    probes: Probes
+    simple: Simple
+    skip-verify: Insecure Skip Verify
+    sni: SNI
+    source-ip: Use Source IP
+    split-errors: Split External Local Origin Errors
+    subset: Subset
+    subsets: Subsets
+    tcp-alive: TCP Keep Alive
+    tcp-settings: TCP Connection Pool Settings
+    time: Time
+    tls-settings: Client TLS Settings
+    to: To
+    traffic-policy: Traffic Policy
+    ttl: TTL
+  exported-to-namespaces: Exported to Namespaces
+  host: Host
+  name_singular: Destination Rule
+  state: State
+  title: Destination Rules
 discovery-and-network:
   title: Discovery and Network
 dnsentries:
@@ -612,17 +732,21 @@ dnsentries:
     created: DNS Entry created
   name_singular: DNS Entry
   placeholders:
-    dns-name: Enter the DNS Name.
+    dns-name: Select the DNS Name.
     target-a: Enter the A record target.
     target-cname: Enter the CNAME record target.
     ttl: Enter the time to live.
   title: DNS Entries
   tooltips:
+    deleting: The DNS records are now being deleted.
+    invalid: A conflict exists with another DNS entry or owner.
+    pending: The DNS entry update is batched or in progress.
+    ready: The entry has been accepted and the DNS record created.
+    stale: The DNS entry exists, but there is an issue with the provider.
     target: Target must be an A record, or a CNAME record. Provide either target or text.
     text: Text record must be a string. Provide either target or text.
     use-a: Switch to A record.
     use-cname: Switch to CNAME record.
-  use-cname: Use CNAME
 dnsproviders:
   description: <0>DNS Provider</0> is used to specify and manage the configuration for the external DNS services.
   domains: Domains
@@ -646,6 +770,7 @@ dnsproviders:
   tooltips:
     excluded-domains: The selection of forbidden domains (by default, all zones and domains in those zones are served), $t(domains.example).
     included-domains: The selection of allowed domains (by default, all zones and domains in those zones are served), $t(domains.example).
+    ready: The entry has been accepted and the DNS record created.
 domains:
   example: for example, *.api.mydomain.com
   exclude:
@@ -670,6 +795,7 @@ event-subscription:
       failed-delete: Failed to delete the Subscription
       removed: Subscription removed
     title: Add Event Subscription
+  description: <0>Event Subscription</0> is used to subscribe to events.
   errors:
     invalid: The eventType field must have a proper value.
     not-matching-search-query: Couldn't find Event Subscriptions matching this query.
@@ -765,13 +891,17 @@ functions:
   statuses:
     building: Building
     deploying: Deploying
-    failed: Failed
-    failed-message: Function couldn't be processed.
     initializing: Initializing
     new-revision-error: New Revision Error
     running: Running
     unhealthy: Unhealthy
   title: Functions
+  tooltips:
+    building: Waiting for the image to build.
+    deploying: Deploying the Function.
+    failed: Function couldn't be processed.
+    running: Function created.
+    unhealthy: Waiting for the required number of replicas.
   variable:
     buttons:
       add: Add Environment Variable
@@ -927,12 +1057,47 @@ git-repositories:
   title: Git Repositories
   tooltips:
     auth: 'Basic: token or password / SSH key: authentication key / Public: no authentication.'
+    basic: Basic access authentication required.
+    key: SSH key required.
+    none: Authentication not required.
     secret: The name of the Secret with credentials used by the Function Controller to authenticate to the Git repository in order to fetch the Function's source code and dependencies.
     url: URL must be a valid Git repository address that starts with the "http(s)", "git", or "ssh" prefix.
+ingresses:
+  description: <0>Ingress</0> describes the routing rules for traffic to services within a cluster. The routing is managed by the Ingress resource.
+  labels:
+    apiGroup: APIGroup
+    backend: Backend
+    default-backend: Default backend
+    host: Host
+    ingress-class-name: Ingress class name
+    kind: Kind
+    load-balancers: Load Balancers
+    path: Path
+    path-type: Path type
+    paths: Paths
+    port: Port
+    port-name: Port name
+    port-number: Port number
+    rules: Rules
+    service-name: Service name
+  message:
+    rules-not-found: Rules not found
+  name_singular: Ingress
+  title: Ingresses
 instances:
   description: <0>Service Instance</0> is a provisioned instance of a service that can be consumed by an application.
   no-specific-plan-parameters:
     tooltip: The service provider did not define specific parameters for the selected plan. Refer to the documentation to learn about the required parameters, and define them as a JSON in the editor.
+  statuses:
+    deprovisionedsuccessfully: Deprovisioned Successfully
+    deprovisionrequestinflight: Deprovision Request In Flight
+    instanceupdatedsuccessfully: Instance Updated Successfully
+    orphanmitigationsuccessful: Orphan Mitigation Successful
+    provisioncallfailed: Provision Call Failed
+    provisionedsuccessfully: Provisioned Successfully
+    provisioning: Provisioning
+    provisionrequestinflight: Provision Request In Flight
+    updateinstancerequestinflight: Update Instance Request In Flight
   title: Instances
 integration:
   title: Integration
@@ -975,12 +1140,16 @@ issuers:
     included-domains: The domains (including subdomains) for which certificate requests are allowed, $t(domains.example).
     issuer-type: Certification authority used
     key-secret-ref: keySecretRef is the secret ref to the Secret that holds the symmetric MAC key of the External Account Binding with data key 'hmacKey'. The secret key stored in the Secret **must** be un-padded, base64 URL encoded data.
+    pending: The Issuer's update is batched or in progress.
+    ready: Ready to generate the certificate.
     requests: RequestsPerDayQuota is the maximum number of certificate requests per days allowed for this issuer
     secret-ref-acme: PrivateKeySecretRef is the secret ref to the ACME private key.
     secret-ref-ca: PrivateKeySecretRef is the secret ref to the CA secret.
     server: Server is the URL of the ACME server.
     skip-dns: SkipDNSChallengeValidation marks that this issuer does not validate DNS challenges. In this case, no DNS entries/records are created for a DNS Challenge, and DNS propagation is not checked.
   type: Issuer Type
+istio:
+  title: Istio
 jobs:
   completion-time: Completion Time
   completions: Completions
@@ -1019,9 +1188,12 @@ jobs:
       starting-deadline: Optional deadline in seconds for starting the job if it misses the scheduled time.
       suspend: 'If true, the controller suspends subsequent executions (default: false). It does not apply to started executions.'
   description: <0>Job</0> creates and supervises Pods until their successful termination.
-  name-singular: Job
+  name_singular: Job
   start-time: Start Time
   title: Jobs
+  tooltips:
+    complete: Job completed.
+    not-complete: Job in progress.
 kubeconfig-id:
   error: "Couldn't load kubeconfig ID; configuration not changed (Error: ${{error}})."
   must-be-an-object: Kubeconfig must be a JSON or YAML object.
@@ -1054,7 +1226,12 @@ namespaces:
   create-modal:
     apply-limits: Apply limits per container
     apply-memory-quotas: Apply total memory quotas
+    container-limits: Container limits
+    create-limit-range: Create limit range
+    create-resource-quota: Create resource quota
     disable-sidecar: Disable sidecar injection
+    memory-limits: Memory limits
+    memory-quotas: Memory quotas
   description: <0>Namespace</0> helps to maintain and divide resources in a cluster.
   events:
     headers:
@@ -1063,6 +1240,7 @@ namespaces:
       object: Object
       object-type: Object Type
     title: Warnings
+  name_singular: Namespace
   overview:
     back: Back to Namespaces
     resources:
@@ -1077,26 +1255,33 @@ namespaces:
       error: 'Error while loading {{title}} data due to: {{message}}'
       pods: $t(pods.title)
       title: Healthy Resources
+  statuses:
+    active: Active
+    terminating: Terminating
   title: Namespaces
   tooltips:
+    active: The Namespace is available for use.
     container-memory-limit: Define memory constraints for individual containers in your Namespace.
     create: Select this option to disable Istio to mediate all communication between the Pods in your Namespace.
     healthy-resources: '{{value}}/{{total}} {{resourceType}} are healthy.'
     memory-examples: 'Use plain value in bytes (128974848) or equivalent suffixes (e.g.: 129e6, 129M, 123Mi).'
     no-resources: There are no {{resourceType}} in this Namespace.
+    terminating: The Namespace is being terminated.
     total-memory-limit: Define constraints that limit total memory consumption in your Namespace.
     usage-of-memory-limits: This Namespace uses {{valueText}} of {{maxText}} its memory limits.
     usage-of-memory-requests: This Namespace uses {{valueText}} of {{maxText}} its memory requests.
 no-permissions:
   title: No Permissions
 node-details:
+  all: All messages
+  information: Information
   internal-ip: Internal IP
   involved-object: Involved Object
-  message: Message
+  messages: Messages
   name: Cluster Overview - Nodes
   pod-cidr: Pod CIDR
   timestamp: Timestamp
-  title-warnings: Warnings
+  warnings: Warnings
 oauth2-clients:
   auth-methods:
     client_secret_basic: Client Secret / Basic
@@ -1135,6 +1320,7 @@ oauth2-clients:
   tooltips:
     audience: Audience is a whitelist defining the audiences this client is allowed to request tokens for.
     client-name: Client name is the human-readable string name of the client to be presented to the end-user during authorization.
+    ok: Authorization completed.
     secret-name: Secret name points to the Kubernetes Secret that contains the client's ID and password.
 observability:
   title: Observability
@@ -1161,9 +1347,38 @@ pods:
     failed-to-download: Failed to download the logs.
     no-logs-available: No logs avaliable for the '{{containerName}}' container.
     type-not-found: '{{type}} not found.'
+  name_singular: Pod
   node: Node
   restarts: Restarts
+  statuses:
+    completed: Completed
+    containercreating: Container Creating
+    containersnotinitialized: Containers Not Initialized
+    containersnotready: Container Not Ready
+    crashloopbackoff: Crash Loop Back-off
+    createcontainerconfigerror: Create Container Config Error
+    createcontainererror: Create Container Error
+    dockerdaemonnotready: Docker Daemon Not Ready
+    errimageneverpull: Image Never Pulled
+    errimagepull: Image Pull Error
+    error: Error
+    evicted: Evicted
+    imageinspecterror: Image Inspect Error
+    imagepullbackoff: Image Pull Back-off
+    invalidimagename: Invalid Image Name
+    networkpluginnotready: Network Plugin Not Ready
+    podinitializing: Pod initializing
+    poststarthookerror: Post-start Hook Error
+    registryunavailable: Registry Unavailable
+    runcontainererror: Run Container Error
+    running: Running
+    terminated: Terminated
+    terminating: Terminating
   title: Pods
+  tooltips:
+    error: Pod failed to start
+    no-restarts: None of the containers has restarted.
+    running: Pod is running correctly
 preferences:
   title: Preferences
 replica-sets:
@@ -1186,7 +1401,13 @@ replica-sets:
     requests: Requests
   memory: Memory
   name_singular: Replica Set
+  statuses:
+    error: Error
+    running: Running
   title: Replica Sets
+  tooltips:
+    error: At least one of the Pods has failed
+    running: All the Pods are running correctly
 resource-quotas:
   headers:
     limits: Limits
@@ -1241,6 +1462,13 @@ secrets:
     decode: Decode
     encode: Encode
     expand: Expand All
+  certificate-panel:
+    expiration-warning: This certificate is expired.
+    expires: Expires
+    issuer: Issuer
+    subject: Subject
+    title: Certificate Data for {{name}}
+    valid-since: Valid Since
   create-modal:
     messages:
       decoding-failure: 'Failed to decode the Secret data: {{error}}.'
@@ -1305,11 +1533,12 @@ settings:
   clusters:
     confirmations: Confirmations
     description: Cluster interaction
+    disableResourceProtection: Allow for modification of protected resources
     dontConfirmDelete: Delete without confirmation
     showHiddenNamespaces: Show hidden Namespaces
     title: Clusters
   interface:
-    description: Theme, language
+    description: Appearance, language
     themes:
       dark:
         description: Use in dimmed environments
@@ -1328,9 +1557,13 @@ settings:
         title: Light / Dark
     title: Interface
   language: Language
+  other:
+    default-page-size: Default Page Size
+    title: Other
   theme: Theme
 stateful-sets:
   description: <0>Stateful Set</0> is used for the management of Pods' deployment and scaling.
+  name_singular: Stateful Set
   replicas: Replicas
   title: Stateful Sets
 top-nav:

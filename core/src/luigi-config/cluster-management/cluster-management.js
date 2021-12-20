@@ -35,6 +35,16 @@ export function getCurrentContextNamespace(kubeconfig) {
   return context?.context.namespace;
 }
 
+export function getAfterLoginLocation(clusterName, kubeconfig) {
+  const preselectedNamespace = getCurrentContextNamespace(kubeconfig);
+
+  return `/cluster/${encodeURIComponent(clusterName)}/${
+    preselectedNamespace
+      ? `namespaces/${preselectedNamespace}/details`
+      : 'overview'
+  }`;
+}
+
 export async function setCluster(clusterName) {
   const clusters = await getClusters();
   const params = clusters[clusterName];
@@ -45,12 +55,12 @@ export async function setCluster(clusterName) {
   try {
     await reloadAuth();
 
-    const preselectedNamespace = getCurrentContextNamespace(params.kubeconfig);
     const kubeconfigUser = params.currentContext.user.user;
 
-    const targetLocation =
-      `/cluster/${encodeURIComponent(clusterName)}/namespaces` +
-      (preselectedNamespace ? `/${preselectedNamespace}/details` : '');
+    const targetLocation = getAfterLoginLocation(
+      clusterName,
+      params.kubeconfig,
+    );
 
     if (hasNonOidcAuth(kubeconfigUser)) {
       setAuthData(kubeconfigUser);
@@ -113,20 +123,9 @@ export async function getActiveCluster() {
   // add target cluster config
   clusters[clusterName].config = merge(
     {},
-    targetClusterConfig,
     clusters[clusterName].config,
+    targetClusterConfig.config,
   );
-
-  // init params can't override target cluster storage
-  if (targetClusterConfig.storage) {
-    clusters[clusterName].config.storage = targetClusterConfig.storage;
-  }
-
-  // merge keys of config.features
-  clusters[clusterName].config.features = {
-    ...clusters[clusterName].config.features,
-    ...targetClusterConfig.features,
-  };
 
   clusters[clusterName] = await mergeParams(clusters[clusterName]);
   return clusters[clusterName];

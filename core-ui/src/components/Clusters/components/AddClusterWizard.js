@@ -1,9 +1,13 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Wizard, MessageStrip } from 'fundamental-react';
 import { useTranslation } from 'react-i18next';
 
-import { ResourceForm } from 'shared/ResourceForm/ResourceForm';
-import { useNotification, useMicrofrontendContext } from 'react-shared';
+import { ResourceForm } from 'shared/ResourceForm';
+import {
+  useNotification,
+  useMicrofrontendContext,
+  useCustomFormValidator,
+} from 'react-shared';
 
 import { hasKubeconfigAuth, getUser, getContext, addCluster } from '../shared';
 import { AuthForm } from './AuthForm';
@@ -24,13 +28,16 @@ export function AddClusterWizard({
   const notification = useNotification();
 
   const [hasAuth, setHasAuth] = useState(false);
-  const [authValid, setAuthValid] = useState(false);
   const [hasOneContext, setHasOneContext] = useState(false);
   const [storage, setStorage] = useState(
     busolaClusterParams?.config?.storage || 'localStorage',
   );
-
-  const authFormRef = useRef();
+  const {
+    isValid: authValid,
+    formElementRef: authFormRef,
+    setCustomValid,
+    revalidate,
+  } = useCustomFormValidator();
 
   useEffect(() => {
     if (kubeconfig) {
@@ -42,7 +49,7 @@ export function AddClusterWizard({
     }
   }, [kubeconfig]);
 
-  function updateKubeconfig(kubeconfig) {
+  const updateKubeconfig = kubeconfig => {
     if (!kubeconfig) {
       setKubeconfig(null);
       return;
@@ -55,7 +62,7 @@ export function AddClusterWizard({
     setHasAuth(hasAuth);
 
     setKubeconfig(kubeconfig);
-  }
+  };
 
   const onComplete = () => {
     try {
@@ -73,6 +80,7 @@ export function AddClusterWizard({
       console.warn(e);
     }
   };
+
   return (
     <Wizard
       onCancel={onCancel}
@@ -115,10 +123,13 @@ export function AddClusterWizard({
             formElementRef={authFormRef}
             resource={kubeconfig}
             setResource={setKubeconfig}
-            onValid={setAuthValid}
+            setCustomValid={setCustomValid}
+            createResource={e => {
+              e.preventDefault();
+            }}
           >
             {!hasOneContext && <ContextChooser />}
-            {!hasAuth && <AuthForm onValid={setAuthValid} />}
+            {!hasAuth && <AuthForm revalidate={revalidate} />}
           </ResourceForm.Single>
         </Wizard.Step>
       )}

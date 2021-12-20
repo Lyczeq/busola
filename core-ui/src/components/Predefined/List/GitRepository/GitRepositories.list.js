@@ -7,7 +7,7 @@ import { Link as ReactSharedLink } from 'react-shared';
 import { Trans } from 'react-i18next';
 
 export const GitRepositoriesList = ({ DefaultRenderer, ...otherParams }) => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
 
   const customColumns = [
     {
@@ -17,7 +17,9 @@ export const GitRepositoriesList = ({ DefaultRenderer, ...otherParams }) => {
     {
       header: t('git-repositories.labels.auth'),
       value: repo => (
-        <StatusBadge type="info">{repo.spec.auth?.type || 'none'}</StatusBadge>
+        <StatusBadge i18n={i18n} resourceKind="git-repositories" type="info">
+          {repo.spec.auth?.type || 'none'}
+        </StatusBadge>
       ),
     },
     {

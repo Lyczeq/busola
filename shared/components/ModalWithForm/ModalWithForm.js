@@ -1,30 +1,13 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { Dialog, Button } from 'fundamental-react';
 import LuigiClient from '@luigi-project/client';
 import { useTranslation } from 'react-i18next';
+
 import { useNotification } from '../../contexts/NotificationContext';
 import { Tooltip } from '../Tooltip/Tooltip';
 import CustomPropTypes from '../../typechecking/CustomPropTypes';
-
-const isFormValid = (formRef, reportValidity = false) => {
-  if (!formRef || !formRef.current) return false;
-
-  if (reportValidity && typeof formRef.current.reportValidity === 'function') {
-    // for IE
-    formRef.current.reportValidity();
-  }
-
-  return formRef.current.checkValidity();
-};
-
-const isJsonSchemaFormValid = formRef => {
-  if (!formRef || !formRef.current) return true;
-
-  return formRef.current.state && formRef.current.state.errors
-    ? !formRef.current.state.errors.length
-    : true;
-};
+import { useCustomFormValidator } from '../../hooks/useCustomFormValidator';
 
 export const ModalWithForm = ({
   performRefetch,
@@ -46,36 +29,28 @@ export const ModalWithForm = ({
 }) => {
   const { t } = useTranslation(null, { i18n });
   const [isOpen, setOpen] = useState(alwaysOpen || false);
-  const [isValid, setValid] = useState(false);
-  const [customValid, setCustomValid] = useState(true);
-  const formElementRef = useRef(null);
-  const jsonSchemaFormRef = useRef(null);
+
+  const {
+    isValid,
+    formElementRef,
+    setCustomValid,
+    revalidate,
+  } = useCustomFormValidator();
   const notificationManager = useNotification();
 
   confirmText = confirmText || t('common.buttons.create');
 
   useEffect(() => {
     if (!alwaysOpen) setOpenStatus(opened); // if alwaysOpen===true we can ignore the 'opened' prop
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [opened]);
+  }, [opened]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     if (isOpen !== undefined) onModalOpenStateChange(isOpen);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isOpen]);
-
-  function checkAllForms(reportValidity = false) {
-    const _isEveryFormValid =
-      isFormValid(formElementRef, reportValidity) &&
-      isJsonSchemaFormValid(jsonSchemaFormRef);
-    if (isValid !== _isEveryFormValid) {
-      setValid(_isEveryFormValid);
-    }
-  }
+  }, [isOpen]); // eslint-disable-line react-hooks/exhaustive-deps
 
   function setOpenStatus(status) {
     if (status) {
-      checkAllForms(false);
+      setTimeout(() => revalidate());
       LuigiClient.uxManager().addBackdrop();
     } else {
       LuigiClient.uxManager().removeBackdrop();
@@ -85,7 +60,7 @@ export const ModalWithForm = ({
   }
 
   function handleFormChanged(e) {
-    setTimeout(() => checkAllForms());
+    setTimeout(() => revalidate());
     if (!e) return;
     if (e.target) {
       if (e.target.getAttribute('data-ignore-visual-validation')) {
@@ -115,9 +90,7 @@ export const ModalWithForm = ({
   }
 
   function handleFormSubmit() {
-    const _isEveryFormValid =
-      isFormValid(formElementRef) && isJsonSchemaFormValid(jsonSchemaFormRef);
-    if (_isEveryFormValid) {
+    if (isValid) {
       formElementRef.current.dispatchEvent(
         new Event('submit', { cancelable: true }),
       );
@@ -126,7 +99,7 @@ export const ModalWithForm = ({
   }
 
   function renderConfirmButton() {
-    const disabled = !isValid || !customValid;
+    const disabled = !isValid;
     const button = (
       <Button
         disabled={disabled}
@@ -194,19 +167,12 @@ export const ModalWithForm = ({
         {isOpen &&
           renderForm({
             formElementRef,
-            jsonSchemaFormRef,
             isValid,
-            setCustomValid: isValid => {
-              // revalidate rest of the form
-              setValid(formElementRef.current.checkValidity());
-              setCustomValid(isValid);
-            },
-            setValid: setValid,
+            setCustomValid,
             onChange: handleFormChanged,
             onError: handleFormError,
             onCompleted: handleFormSuccess,
             performManualSubmit: handleFormSubmit,
-            setValidity: setValid,
             item: item,
           })}
       </Dialog>

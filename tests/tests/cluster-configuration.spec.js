@@ -1,26 +1,27 @@
 /// <reference types="cypress" />
 import 'cypress-file-upload';
-import config from '../config';
 
 const configMock = {
   data: {
     config: JSON.stringify({
-      navigation: {
-        disabledNodes: [],
-        externalNodes: [
-          {
-            category: 'Category from target cluster',
-            icon: 'course-book',
-            children: [
-              {
-                label: 'Example label',
-                link: 'http://test',
-              },
-            ],
-          },
-        ],
+      config: {
+        navigation: {
+          disabledNodes: [],
+          externalNodes: [
+            {
+              category: 'Category from target cluster',
+              icon: 'course-book',
+              children: [
+                {
+                  label: 'Example label',
+                  link: 'http://test',
+                },
+              ],
+            },
+          ],
+        },
+        storage: 'inMemory',
       },
-      storage: 'inMemory',
     }),
   },
 };
@@ -34,7 +35,7 @@ context('Cluster configuration', () => {
   it('Applies config from target cluster', () => {
     cy.intercept(requestData, configMock);
     cy.loginAndSelectCluster();
-    cy.url().should('match', /namespaces$/);
+    cy.url().should('match', /overview$/);
 
     // cluster storage message should be visible
     cy.contains(/The chosen storage type has been overwritten/).should(
@@ -49,5 +50,43 @@ context('Cluster configuration', () => {
       .contains('Cluster Overview')
       .click();
     cy.contains('sessionStorage').should('be.visible');
+  });
+
+  it('Test pagination', () => {
+    cy.loginAndSelectCluster();
+
+    cy.getLeftNav()
+      .contains('Configuration')
+      .click();
+
+    cy.getLeftNav()
+      .contains('Cluster Roles')
+      .click();
+
+    cy.getIframeBody()
+      .find('[role=datarow]')
+      .should('have.length', 20);
+
+    cy.get('[data-testid="luigi-topnav-profile-btn"]').click();
+
+    cy.contains('Preferences').click();
+
+    cy.getModalIframeBody()
+      .contains('Other')
+      .click();
+
+    cy.getModalIframeBody()
+      .contains('20')
+      .click();
+
+    cy.getModalIframeBody()
+      .contains('10')
+      .click();
+
+    cy.get('[aria-label="close"]').click();
+
+    cy.getIframeBody()
+      .find('[role=datarow]')
+      .should('have.length', 10);
   });
 });

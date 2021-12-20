@@ -221,7 +221,7 @@ function Resources({
   };
 
   const actions = readOnly
-    ? []
+    ? customListActions
     : [
         {
           name: t('common.buttons.edit'),
@@ -372,7 +372,7 @@ function Resources({
         rowRenderer={rowRenderer}
         serverDataError={error}
         serverDataLoading={loading}
-        pagination={{ itemsPerPage: 20, autoHide: true }}
+        pagination={{ autoHide: true }}
         extraHeaderContent={extraHeaderContent}
         testid={testid}
         currentlyEditedResourceUID={currentlyEditedResourceUID}

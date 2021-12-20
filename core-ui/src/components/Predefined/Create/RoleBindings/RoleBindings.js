@@ -1,40 +1,36 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ResourceForm } from 'shared/ResourceForm/ResourceForm';
 import * as jp from 'jsonpath';
 import { createBindingTemplate, newSubject } from './templates';
 import { SingleSubjectForm, SingleSubjectInput } from './SubjectForm';
 import { validateBinding } from './helpers';
 import { MessageStrip } from 'fundamental-react';
 import { RoleForm } from './RoleForm.js';
-import * as Inputs from 'shared/ResourceForm/components/Inputs';
+import { ResourceForm } from 'shared/ResourceForm';
+import * as Inputs from 'shared/ResourceForm/inputs';
+import { KeyValueField, ItemArray } from 'shared/ResourceForm/fields';
 import { useGetList } from 'react-shared';
+import _ from 'lodash';
 
 export function RoleBindings({
   formElementRef,
   namespace,
   onChange,
   setCustomValid,
+  resource: initialRoleBinding,
+  resourceUrl,
+  pluralKind,
+  singularName,
 }) {
   const { t } = useTranslation();
 
-  const [binding, setBinding] = useState(createBindingTemplate(namespace));
+  const [binding, setBinding] = useState(
+    _.cloneDeep(initialRoleBinding) || createBindingTemplate(namespace),
+  );
 
   React.useEffect(() => {
     setCustomValid(validateBinding(binding));
   }, [binding, setCustomValid]);
-
-  const resourceData = namespace
-    ? {
-        pluralKind: 'rolebindings',
-        singularName: t(`role-bindings.name_singular`),
-        createUrl: `/apis/rbac.authorization.k8s.io/v1/namespaces/${namespace}/rolebindings/`,
-      }
-    : {
-        pluralKind: 'clusterrolebindings',
-        singularName: t(`cluster-role-bindings.name_singular`),
-        createUrl: '/apis/rbac.authorization.k8s.io/v1/clusterrolebindings/',
-      };
 
   const rolesUrl = `/apis/rbac.authorization.k8s.io/v1/namespaces/${namespace}/roles`;
   const {
@@ -79,29 +75,31 @@ export function RoleBindings({
   };
   return (
     <ResourceForm
-      pluralKind={resourceData.pluralKind}
-      singularName={resourceData.singularName}
+      pluralKind={pluralKind}
+      singularName={singularName}
       resource={binding}
       setResource={setBinding}
       onChange={onChange}
       formElementRef={formElementRef}
-      createUrl={resourceData.createUrl}
+      createUrl={resourceUrl}
+      initialResource={initialRoleBinding}
     >
       <ResourceForm.FormField
         required
         label={t('common.labels.name')}
         placeholder={t('components.k8s-name-input.placeholder', {
-          resourceType: resourceData.singularName,
+          resourceType: singularName,
         })}
         input={Inputs.Text}
         propertyPath="$.metadata.name"
+        readOnly={!!initialRoleBinding}
       />
-      <ResourceForm.KeyValueField
+      <KeyValueField
         advanced
         propertyPath="$.metadata.labels"
         title={t('common.headers.labels')}
       />
-      <ResourceForm.KeyValueField
+      <KeyValueField
         advanced
         propertyPath="$.metadata.annotations"
         title={t('common.headers.annotations')}
@@ -118,19 +116,20 @@ export function RoleBindings({
       ) : (
         <MessageStrip simple type="warning" className="fd-margin-top--sm">
           {t('role-bindings.create-modal.at-least-one-subject-required', {
-            resource: resourceData.singularName,
+            resource: singularName,
           })}
         </MessageStrip>
       )}
-      <ResourceForm.ItemArray
+      <ItemArray
         advanced
+        defaultOpen
         propertyPath="$.subjects"
         listTitle={t('role-bindings.create-modal.subjects')}
         nameSingular={t('role-bindings.create-modal.subject')}
         entryTitle={subject => subject?.name}
         atLeastOneRequiredMessage={t(
           'role-bindings.create-modal.at-least-one-subject-required',
-          { resource: resourceData.singularName },
+          { resource: singularName },
         )}
         itemRenderer={({ item, values, setValues, index }) => (
           <SingleSubjectForm

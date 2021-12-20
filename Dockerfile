@@ -16,7 +16,7 @@ ENV CI true
 COPY . /app
 
 RUN make resolve
-RUN make lint
+RUN make validate
 RUN make pull-licenses
 
 RUN cd /app/core && make test && make build
@@ -24,7 +24,7 @@ RUN cd /app/service-catalog-ui && make test && make build
 RUN cd /app/core-ui && make test && make build
 
 # ---- Serve ----
-FROM alpine:3.14.2
+FROM alpine:3.14.3
 WORKDIR /app
 
 RUN apk --no-cache upgrade &&\

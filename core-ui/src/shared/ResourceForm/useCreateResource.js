@@ -29,18 +29,24 @@ export function useCreateResource(
         },
       ),
     });
-    if (namespaceId) {
-      LuigiClient.linkManager()
-        .fromContext('namespace')
-        .navigate(
-          `/${pluralKind.toLowerCase()}/details/${resource.metadata.name}`,
-        );
-    } else {
-      LuigiClient.linkManager().navigate(`details/${resource.metadata.name}`);
+    if (!initialResource) {
+      if (namespaceId) {
+        LuigiClient.linkManager()
+          .fromContext('namespace')
+          .navigate(
+            `/${pluralKind.toLowerCase()}/details/${resource.metadata.name}`,
+          );
+      } else {
+        LuigiClient.linkManager().navigate(`details/${resource.metadata.name}`);
+      }
     }
   };
 
-  return async () => {
+  return async e => {
+    if (e) {
+      e.preventDefault();
+    }
+
     try {
       if (initialResource) {
         const mergedResource = {

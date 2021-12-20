@@ -13,6 +13,7 @@ import { reloadAuth } from './auth/auth';
 import { setFeatureToggle } from './utils/feature-toggles';
 import { setTheme } from './utils/theme';
 import { setSSOAuthData } from './auth/sso';
+import { communicationEntry as pageSizeCommunicationEntry } from './settings/pagination';
 
 export const communication = {
   customMessagesListeners: {
@@ -30,9 +31,11 @@ export const communication = {
     'busola.showHiddenNamespaces': ({ showHiddenNamespaces }) => {
       setFeatureToggle('showHiddenNamespaces', showHiddenNamespaces);
     },
+    'busola.disableResourceProtection': ({ disableResourceProtection }) => {
+      setFeatureToggle('disableResourceProtection', disableResourceProtection);
+    },
     'busola.dontConfirmDelete': ({ value }) => {
       setFeatureToggle('dontConfirmDelete', value);
-      Luigi.configChanged();
     },
     'busola.refreshNavigation': () => {
       Luigi.configChanged('navigation.nodes');
@@ -103,6 +106,7 @@ export const communication = {
         pathId,
       });
     },
+    ...pageSizeCommunicationEntry,
   },
 };
 

@@ -4,12 +4,12 @@ import * as jp from 'jsonpath';
 import { ComboboxInput } from 'fundamental-react';
 
 import { useMicrofrontendContext } from 'react-shared';
-import { ResourceForm } from 'shared/ResourceForm/ResourceForm';
+import { ResourceForm } from 'shared/ResourceForm';
 import {
   K8sNameField,
   KeyValueField,
   DataField,
-} from 'shared/ResourceForm/components/FormComponents';
+} from 'shared/ResourceForm/fields';
 
 import { createSecretTemplate, createPresets, getSecretDefs } from './helpers';
 
@@ -25,7 +25,7 @@ function SecretsCreate({
 }) {
   const { t } = useTranslation();
   const [secret, setSecret] = useState(
-    { ...initialSecret } || createSecretTemplate(namespaceId),
+    initialSecret ? { ...initialSecret } : createSecretTemplate(namespaceId),
   );
   const [lockedKeys, setLockedKeys] = useState([]);
 
@@ -68,7 +68,7 @@ function SecretsCreate({
       setCustomValid={setCustomValid}
     >
       <K8sNameField
-        disabled={!!initialSecret}
+        readOnly={!!initialSecret}
         propertyPath="$.metadata.name"
         kind={t('secrets.name_singular')}
         setValue={name => {
@@ -98,9 +98,10 @@ function SecretsCreate({
             compact
             placeholder={t('secrets.placeholders.type')}
             options={secretTypes.map(type => ({ key: type, text: type }))}
-            value={secret.type}
-            selectedKey={secret.type}
+            selectedKey={value}
+            typedValue={value}
             onSelect={e => setValue(e.target.value)}
+            disabled={!!initialSecret}
           />
         )}
       />
