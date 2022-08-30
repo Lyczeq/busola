@@ -25,6 +25,7 @@ import { MonacoRenderer } from './MonacoRenderer';
 import { ResourceRenderer } from './ResourceRenderer';
 import { ResourceRefRender } from './ResourceRefRenderer';
 import { SimpleList } from './SimpleList';
+import { Map } from './Map';
 
 const pluginStack = [
   ReferencingHandler,
@@ -65,6 +66,7 @@ export const widgets = {
     */
     SimpleList,
     GenericList,
+    Map,
     /*
     OptionsCheck,
     OptionsRadio,
