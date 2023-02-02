@@ -11,9 +11,9 @@ import { schemaWorkerStatusState } from 'state/schemaWorkerStatusAtom';
 export const useGetSchema = ({ schemaId, skip, resource }) => {
   if (!schemaId && resource) {
     const { group, version, kind } = resource;
-    schemaId = `${group}/${version}/${kind}`;
+    if (!group) schemaId = `${version}/${kind}`;
+    else schemaId = `${group}/${version}/${kind}`;
   }
-
   const { areSchemasComputed, schemasError } = useRecoilValue(
     schemaWorkerStatusState,
   );
